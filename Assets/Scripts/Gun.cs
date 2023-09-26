@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.UIElements;
 
 public class Gun : MonoBehaviour
 {
@@ -9,12 +10,19 @@ public class Gun : MonoBehaviour
     /// The direction of the initial velocity of the fired projectile. That is,
     /// this is the direction the gun is aiming in.
     /// </summary>
+    public int weapon = 1;
+    [SerializeField] GameObject weapon1;
+    [SerializeField] GameObject weapon2;
+    [SerializeField] GameObject weapon3;
+    [SerializeField] GameObject weapon4;
+    [SerializeField] GameObject spawnLocation;
+
     public Vector3 FireDirection
     {
         get
         {
-            // TODO: YOUR CODE HERE
-            return Vector3.zero;
+            Vector3 velocity = spawnLocation.transform.position - transform.position;
+            return velocity;
         }
     }
 
@@ -25,9 +33,8 @@ public class Gun : MonoBehaviour
     public Vector3 SpawnPosition
     {
         get
-        {
-            // TODO: YOUR CODE HERE
-            return Vector3.zero;
+        { 
+            return spawnLocation.transform.position;
         }
     }
 
@@ -39,8 +46,27 @@ public class Gun : MonoBehaviour
     {
         get
         {
-            // TODO: YOUR CODE HERE
-            return null;
+            GameObject currentWeapon;
+            switch (weapon)
+            {
+                case 1:
+                    currentWeapon = weapon1;
+                    return currentWeapon;
+                case 2:
+                    currentWeapon = weapon2;
+                    return currentWeapon;
+                case 3:
+                    currentWeapon = weapon3;
+                    return currentWeapon;
+                case 4:
+                    currentWeapon = weapon4;
+                    return currentWeapon;
+                default:
+                    weapon = 1;
+                    currentWeapon = weapon1;
+                    return currentWeapon;
+            }
+            
         }
     }
 
@@ -51,8 +77,9 @@ public class Gun : MonoBehaviour
     /// <returns>The newly created GameObject.</returns>
     public GameObject Fire()
     {
-        // TODO: YOUR CODE HERE
-        return null;
+        GameObject projectile = GameObject.Instantiate(CurrentWeapon, SpawnPosition, Quaternion.identity);
+        projectile.GetComponent<Particle2D>().velocity = FireDirection;
+        return projectile;
     }
 
     /// <summary>
@@ -63,11 +90,32 @@ public class Gun : MonoBehaviour
     /// </summary>
     public void CycleNextWeapon()
     {
-        // TODO: YOUR CODE HERE
+        weapon++;
+        if (weapon > 4)
+        {
+            weapon = 1;
+        }
+
     }
 
     void Update()
     {
-        // TODO: YOUR CODE HERE (handle all input in Update, not FixedUpdate!)
+        if (InputSystem.GetDevice<Keyboard>().wKey.IsPressed())
+        {
+            CycleNextWeapon();
+        }
+        if (InputSystem.GetDevice<Keyboard>().enterKey.IsPressed())
+        {
+            Fire();
+        }
+        if(InputSystem.GetDevice<Keyboard>().digit1Key.IsPressed())
+        {
+            gameObject.transform.Rotate(0, 0, 1);
+        }
+        if(InputSystem.GetDevice<Keyboard>().digit2Key.IsPressed())
+        {
+            gameObject.transform.Rotate(0, 0, -1);
+        }
     }
+    
 }
